@@ -1,0 +1,72 @@
+(1) myform.py
+
+import flask
+from flask import Flask, render_template, request
+
+app = flask.Flask(__name__)
+@app.route("/myform")
+def form():
+    return render_template('myform.html')
+
+@app.route("/submit", methods=['POST'])
+def submit():
+    account = request.values['account']
+    password = request.values['password']
+    if password == "Testtest":
+        return render_template('resp.html', **locals())
+    else:
+        return "<H1> Error Account or Password! <H1>"
+
+if __name__ == '__main__':
+    app.run()
+
+
+(2) myform.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <H1> Welcome to my TestSite </H1>
+    <form method="POST" action="{{url_for('submit')}}">
+        <p><input type="text" class="form-control" name="account" placeholder="Account">
+        <p><input type="text" class="form-control" name="password" placeholder="Password">
+        <p><button type="submit" class="btn btn-primary">Submit</button>
+</head>
+<body>
+
+</body>
+</html>
+
+
+(3) resp.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <H1>Welcome {{account}}. Thank you for your login.</H1>
+</head>
+<body>
+
+</body>
+</html>
+
+
+(4) werktest.py
+
+import flask
+from flask import Flask, render_template, request
+from werkzeug.security import generate_password_hash, check_password_hash
+
+def set_password(password):
+    return generate_password_hash(method='pbkdf2:sha512:150000', password=password)
+
+def check_password(passwordhash, password):
+    return check_password_hash(passwordhash, password)
+
+password = "Testtest"
+passwordhash = set_password(password)
+
+if check_password(passwordhash, password) is True:
+    print("Check OK \n" + password + "\n" + passwordhash)
+
+
